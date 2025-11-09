@@ -1,28 +1,5 @@
-float find_cgpa(semnode *semhead) {
-    float total_points = 0.0;
-    float total_credits = 0.0;
 
-    semnode *temp = semhead;
-    while (temp != NULL) {
-        float sem_points = 0.0;
-        float sem_credits = 0.0;
 
-        for (int i = 0; i < SUBJECTS; i++) {
-            subnode s = temp->sublist[i];
-            sem_points += getWeightage(s.grade) * s.credit;
-            sem_credits += s.credit;
-        }
-
-        total_points += sem_points;
-        total_credits += sem_credits;
-        temp = temp->next;
-    }
-
-    if (total_credits == 0)
-        return 0.0;
-
-    return total_points / total_credits;
-}
 
 
 float find_sgpa(subnode subjects[]){
