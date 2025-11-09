@@ -27,7 +27,7 @@ typedef struct gradehistory{
     char newgrade;
 }historynode;
 
-type struct snode
+typedef struct snode
 {
   int roll_no;
   char name[50];
