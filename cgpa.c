@@ -1,6 +1,22 @@
+float compute_cgpa(semnode *semhead) {
+    if (semhead == NULL)
+        return 0.0;  
 
+    float total_sgpa = 0.0;
+    int sem_count = 0;
 
+    semnode *temp = semhead;
+    while (temp != NULL) {
+        total_sgpa += temp->sgpa;  
+        sem_count++;               
+        temp = temp->next;          
+    }
 
+    if (sem_count == 0)
+        return 0.0;
+
+    return total_sgpa / sem_count;  
+}
 
 float find_sgpa(subnode subjects[]){
     float sgpa=0;
