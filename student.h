@@ -55,6 +55,7 @@ void delete_a_history(studentnode *s);
 void create_to_add(tree *t, char *sname, int roll_no, int semno, char **subjects, int *credits);
 void updatemarks(tree *t, int roll_no, int semno, char *subname, float marks);
 void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks);
+void display_bst(tree *t);
 float find_sgpa(subnode subjects[]);
 float compute_cgpa(semnode *semhead);
 char getgrade(int marks);
