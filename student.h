@@ -50,7 +50,11 @@ typedef struct tree {
 void init(tree *t);
 studentnode *create_snode(int r_no, char *sname);
 void add_new_student(tree *t, char *sname, int roll_no);
-void addsem(tree *t, int semno, subnode *subjects);
+void addsem(studentnode *s, int semno, subnode *subjects);
+void delete_a_history(studentnode *s);
+void create_to_add(tree *t, char *sname, int roll_no, int semno, char **subjects, int *credits);
+void updatemarks(tree *t, int roll_no, int semno, char *subname, float marks);
+void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks);
 float find_sgpa(subnode subjects[]);
 float compute_cgpa(semnode *semhead);
 char getgrade(int marks);
