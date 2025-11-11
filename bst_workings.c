@@ -351,3 +351,26 @@ void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
 	}
     }
 }
+
+void display_bst(tree *t)
+{
+	int i;
+	semnode *pres;
+	studentnode *root = t->root;
+    if(root!=NULL)
+	   {
+		display_bst(root->left);
+	    printf("Student name: %s  Roll no: %d\n",root->name, root->roll_no);
+		pres=root->semhead;
+		while(pres!=NULL)
+		{
+			printf("Semester %d:\n",pres->semno);
+			for(i=0;i<SUBJECTS;i++)
+				printf("%s marks: %d, grade: %c", pres->sublist[i]->name, pres->sublist[i]->marks, pres->sublist[i]->grade);
+			printf("SGPA: %f",pres->sgpa);
+			pres=pres->next;
+		}
+	    display_bst(root->right);
+	   }
+}
+
