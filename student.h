@@ -47,22 +47,6 @@ typedef struct tree {
     studentnode *root;
 } tree;
 
-
-void init(tree *t);
-studentnode *create_snode(int r_no, char *sname);
-void add_new_student(tree *t, char *sname, int roll_no);
-void addsem(studentnode *s, int semno, subnode *subjects);
-void delete_a_history(studentnode *s);
-void create_to_add(tree *t, char *sname, int roll_no, int semno, char **subjects, int *credits);
-void updatemarks(tree *t, int roll_no, int semno, char *subname, float marks);
-void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks);
-void display_bst(tree *t);
-float find_sgpa(subnode subjects[]);
-float compute_cgpa(semnode *semhead);
-char getgrade(int marks);
-int getWeightage(char ch);
-void addmarks(tree *t, char *sname, int roll_no, int semno, char *subname, float marks);
-
 void init(tree *t);
 void pinit(list_t *p);
 char get_grade(int m);
