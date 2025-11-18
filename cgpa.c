@@ -14,7 +14,6 @@ float compute_cgpa(semnode *semhead) {
 
     if (sem_count == 0)
         return 0.0;
-
     return total_sgpa / sem_count;  
 }
 
@@ -65,3 +64,5 @@ int getWeightage(char ch){
             return -1;
       }     
 }
+
+
