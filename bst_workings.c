@@ -179,34 +179,11 @@ void create_to_add(tree *t, char *sname, int roll_no, int semno, char **subjects
 	
 }
 
-void updatemarks(tree *t, int roll_no, int semno, char *subname, float marks)
+void updatemarks(studentnode *s, int roll_no, int semno, char *subname, int marks)
 {
-	studentnode *pres = t->root;
 	int found=0;
-	float oldmarks;
-	/*if(pres==NULL)
-	{
-		pres = add_new_student(t,sname,roll_no);
-	}*/
-	while(pres!=NULL)
-	{
-		if(pres->roll_no==roll_no)
-		{
-			found=1;
-			break;
-		}
-		else if(roll_no>pres->roll_no)
-			pres = pres->right;
-		else
-			pres = pres->left;
-	}
-	if(!found)
-	{
-		printf("Student doesn't exist. Use add marks to add a student.");
-	}
-
-	found=0;
-	semnode *present_sem = pres->semhead;
+	int oldmarks;
+	semnode *present_sem = s->semhead;
 	while(present_sem!=NULL)
 	{
 		if(present_sem->semno==semno)
@@ -218,38 +195,29 @@ void updatemarks(tree *t, int roll_no, int semno, char *subname, float marks)
 	}
 	if(!found)
 	{
-		printf("Sem doesn't exist. Use add marks to add a semester.");
+		printf("Sem doesn't exist. Please add a semester first.\n");
+		return;
 	}
 
 	found=0;
 	for(int i=0;i<SUBJECTS;i++)
 	{
-		if(strcmp(present_sem->sublist[i]->name,subname)==0)
+		if(strcmp(present_sem->sublist[i].name,subname)==0)
 		{
-			oldmarks = present_sem->sublist[i]->marks;	
-			present_sem->sublist[i]->marks = marks;
-			present_sem->sublist[i]->grade = get_grade_S(marks);	
+			oldmarks = present_sem->sublist[i].marks;	
+			present_sem->sublist[i].marks = marks;
+			present_sem->sublist[i].grade = get_grade(marks);	
 			found=1;		
 		}
 	}
 
 	if(found)
-	{
-		pres->historylength++;
-		if(pres->historylength==(MAXHISTORY-1))
-		{
-			delete_a_history(pres);
-		}
-		historynode new;
-		new.semno = semno;
-		strcpy(new.subname,subname);
-		new.oldmarks = oldmarks;
-		new.newmarks = marks;
-
-		pres->history[pres->historylength]= new;
-	}
+		present_sem->sgpa = find_sgpa(present_sem->sublist);
 	else
+	{
 		printf("Subject not found in the subject array\n");
+		return;
+	}
 }
 
 void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
