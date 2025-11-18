@@ -374,3 +374,41 @@ void display_bst(tree *t)
 	   }
 }
 
+
+void display_backlog(tree *t)
+{
+	int i;
+	semnode *pres;
+	studentnode *root = t->root;
+    if(root!=NULL)
+	   {
+		display_bst(root->left);
+	    
+		list=root->semhead->sublist;
+		for(int i=0;i<SUBJECTS;i++){
+			if(list[i]->backlog == 1)
+				printf("Student name: %s  Roll no: %d has a backlog in %s\n",root->name, root->roll_no,list[i]->name);
+		}
+	    display_bst(root->right);
+	   }
+}
+
+
+void display_counselling(tree *t)
+{
+	int i;
+	semnode *pres;
+	studentnode *root = t->root;
+    if(root!=NULL)
+	   {
+		display_bst(root->left);
+	    
+		sem=root->semhead;
+		float cgpa=compute_cgpa(sem);
+		if(cgpa<6.5)
+				printf("Student name: %s  Roll no: %d has a cgpa %f and needs to attend remedial classes and academic counseling\n",root->name, root->roll_no,cgpa);
+	
+	    display_bst(root->right);
+	   }
+}
+
