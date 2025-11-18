@@ -1,95 +1,57 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include <string.h>
-#define SUBJECTS 6
-#define MAXHISTORY 10
+#include "student.h"
 
-typedef struct subject{
-    int credit;
-    char name;
-    int marks;
-    char grade;
-}subnode;
-
-typedef struct sem{
-    int semno;
-    subnode sublist[SUBJECTS];
-    float sgpa;
-    struct sem* next;
-}semnode;
-
-typedef struct gradehistory{
-    int semno;
-    char subname[20];
-    int oldmarks;
-    int newmarks;
-}historynode;
-
-typedef struct snode
-{
-  int roll_no;
-  char name[50];
-  semnode *semhead;
-  historynode history[MAXHISTORY];
-  int historylength;
-  struct tnode *left;
-  struct tnode *right;
-}studentnode;
-
-
-typedef struct tree
-{
-	studentnode *root;
-}tree;
-  
 void init(tree *t)
 {
      t->root=NULL;
 }	 
 
-studentnode *create_snode(int r_no, char *sname)
+studentnode *create_snode(int r_no, char sname[])
 {
 	studentnode *node = (studentnode*)malloc(sizeof(studentnode));
 	node->roll_no = r_no;
 	strcpy(node->name,sname);
-	node->semhead = node->left = node->right = NULL;
-	node->historylength = -1;
+	node->semhead = NULL;
+	node->left = node->right = NULL;
+	//node->historylength = -1;
 	return node;
 }
 	
-void addsem(studentnode *s, int semno, subnode *subjects)
+void addsem(studentnode *s, int semno, list_t *p)
 {
+	int i;
+	subnode subs[SUBJECTS];
+	char subjects[SUBJECTS][20];
+  	int credits[SUBJECTS];
 	semnode *temp = (semnode*)malloc(sizeof(semnode));
 	temp->semno = semno;
-	for(int i=0; i<SUBJECTS; i++)
-		temp->sublist[i]=subjects[i];
-	temp->sgpa = find_sgpa(subjects);
+	
+	for(i=0;i<SUBJECTS;i++)
+	{
+			printf("Enter the subject name and the credits: ");
+			scanf("%s %d",subjects[i],&credits[i]);
+	}
+	for(i=0;i<SUBJECTS;i++)
+	{
+			temp->sublist[i].credit = credits[i];
+			strcpy(temp->sublist[i].name,subjects[i]);
+			printf("Enter %s marks: ",subjects[i]);
+			scanf("%d", &temp->sublist[i].marks);
+			temp->sublist[i].grade = get_grade(temp->sublist[i].marks);
+	}
+
+	temp->sgpa = find_sgpa(temp->sublist);
 	temp->next=NULL;
 
 	studentnode *pres = s;
 	temp->next = pres->semhead;
 	pres->semhead = temp;
+	pqinsert(p, s);
 }
 
-char get_grade_S(int m)
-{
-	if(m>=90)
-		return 'S'
-	else if(m>=80)
-		return 'A'
-	else if(m>=70)
-		return 'B'
-	else if(m>=60)
-		return 'C'
-	else if(m>=50)
-		return 'D'
-	else if(m>=40)
-		return 'E'
-	else 
-		return 'F'
-}
-
-studentnode add_new_student(tree *t,char *sname, int roll_no)
+studentnode *add_new_student(tree *t,char sname[], int roll_no)
 {
 	studentnode *temp = create_snode(roll_no,sname);
 	studentnode *pres = t->root, *prev = NULL;
@@ -114,24 +76,43 @@ studentnode add_new_student(tree *t,char *sname, int roll_no)
 	return temp;
 }
 
-void delete_a_history(studentnode *s)
+/*void delete_a_history(studentnode *s)
 {
 	s->historylength--;
 	for(int i=0;i<s->historylength;i++)
 	{
 		s->history[i]=s->history[i+1];
 	}
-}
+}*/
 
-void create_to_add(tree *t, char *sname, int roll_no, int semno, char **subjects, int *credits)
+studentnode *findstudent(tree *t, int roll_no)
 {
 	studentnode *pres = t->root;
 	int found=0,i;
-	float oldmarks;
-	/*if(pres==NULL)
+
+	while(pres!=NULL)
 	{
-		pres = add_new_student(t,sname,roll_no);
-	}*/
+		if(pres->roll_no==roll_no)
+		{
+			found=1;
+			break;
+		}
+		else if(roll_no>pres->roll_no)
+			pres = pres->right;
+		else
+			pres = pres->left;
+	}
+	if(found)
+		return pres;
+	else
+		return NULL;
+}
+
+void create_to_add(tree *t, char sname[], int roll_no, int semno, list_t *p)
+{
+	studentnode *pres = t->root;
+	int found=0,i;
+	int oldmarks;
 	while(pres!=NULL)
 	{
 		if(pres->roll_no==roll_no)
@@ -162,27 +143,44 @@ void create_to_add(tree *t, char *sname, int roll_no, int semno, char **subjects
 	}
 	if(!found)
 	{
-		subnode subs[SUBJECTS];
-		for(i=0;i<SUBJECTS;i++)
-		{
-			subs[i].credit = credits[i];
-			strcpy(subs[i].name,subjects[i]);
-			printf("Enter %s marks: ",subjects[i]);
-			scanf("%d", &subs[i].marks);
-			subs[i].grade = get_grade_S(subs[i].marks);
-		}
-		addsem(pres, semno, subs);
+		addsem(pres, semno,p);
 		present_sem=pres->semhead;
 	}
 	else 
+	{
 		printf("Marks already exist. Use update to change them.\n");
-	
+		return;
+	}
 }
 
 void updatemarks(studentnode *s, int roll_no, int semno, char *subname, int marks)
 {
+	//studentnode *pres = t->root;
 	int found=0;
 	int oldmarks;
+	/*if(pres==NULL)
+	{
+		pres = add_new_student(t,sname,roll_no);
+	}*/
+	/*while(pres!=NULL)
+	{
+		if(pres->roll_no==roll_no)
+		{
+			found=1;
+			break;
+		}
+		else if(roll_no>pres->roll_no)
+			pres = pres->right;
+		else
+			pres = pres->left;
+	}
+	if(!found)
+	{
+		printf("Student doesn't exist. Use add marks to add a student.\n");
+		return;
+	}*/
+
+	found=0;
 	semnode *present_sem = s->semhead;
 	while(present_sem!=NULL)
 	{
@@ -211,6 +209,21 @@ void updatemarks(studentnode *s, int roll_no, int semno, char *subname, int mark
 		}
 	}
 
+	/*if(found)
+	{
+		pres->historylength++;
+		if(pres->historylength==(MAXHISTORY-1))
+		{
+			delete_a_history(pres);
+		}
+		historynode new;
+		new.semno = semno;
+		strcpy(new.subname,subname);
+		new.oldmarks = oldmarks;
+		new.newmarks = marks;
+
+		pres->history[pres->historylength]= new;
+	}*/
 	if(found)
 		present_sem->sgpa = find_sgpa(present_sem->sublist);
 	else
@@ -220,13 +233,14 @@ void updatemarks(studentnode *s, int roll_no, int semno, char *subname, int mark
 	}
 }
 
-void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
+void deletemarks(tree *t, int roll_no,list_t *p)
 {
-	int choice;
+	int choice, semno, i;
 	studentnode *pres = t->root;
 	studentnode *prev = NULL;
-	studentnode *p, *q, *temp;
-	printf("Do you want to: \n1. Delete a semester \n2. Delete a student");
+	semnode *prev_sem = NULL;
+	studentnode *pr, *q, *temp;
+	printf("Do you want to: \n1. Delete a student \n2. Delete a semester:  ");
 	scanf("%d",&choice);
 
 	int found=0;
@@ -245,12 +259,12 @@ void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
 	}
 	if(!found)
 	{
-		printf("Student doesn't exist.");
+		printf("Student doesn't exist.\n");
+		return;
 	}
 
 	if(choice==1)
 	{
-		studentnode *q;
 		if((pres->left==NULL)||(pres->right==NULL))
 		{
 			if(pres->left==NULL)
@@ -266,18 +280,26 @@ void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
 		}
 		else//both subtrees present
 		{
-			  //find the inorder successor of curr
-			  p=NULL; //parent of inorder succesor
-		      temp=pres->right;
-               while(temp->left!=NULL)
-			  {
-				  p=temp;
+			//find the inorder successor of curr
+			pr=NULL; //parent of inorder succesor
+		    temp=pres->right;
+            while(temp->left!=NULL)
+			{
+				  pr=temp;
 				  temp=temp->left;
 			  }
 			  //temp is the inorder successor
-			  pres->data=temp->data; //copy value of temp to curr
-             if(p!=NULL)
-				 p->left=temp->right;
+
+			  pres->roll_no=temp->roll_no;
+			  strcpy(pres->name,temp->name);
+			  pres->semhead = temp->semhead; 
+			  //pres->historylength=temp->historylength;
+			  /*for(i=0; i<pres->historylength;i++)
+			  {
+				pres->history[i]=temp->history[i];
+			  }*/
+             if(pr!=NULL)
+				 pr->left=temp->right;
 			  else
 				 pres->right=temp->right;
 		}
@@ -290,13 +312,15 @@ void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
 			trav=t;
 		}
 		pres->semhead=NULL;  //kind of unneccessary
+		pqdelete(p, roll_no);
 		free(pres);
 	}
 	else if(choice==2)
 	{
+	printf("Enter the semester number: ");
+	scanf("%d",&semno);
 	found=0;
 	semnode *present_sem = pres->semhead;
-	semnode *prev_sem - NULL;
 	while(present_sem!=NULL)
 	{
 		if(present_sem->semno==semno)
@@ -308,7 +332,10 @@ void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
 		present_sem = present_sem->next;
 	}
 	if(!found)
-		printf("Sem doesn't exist.");
+	{
+		printf("Sem doesn't exist.\n");
+		return;
+	}
 	else
 	{
 		if(prev_sem==NULL)
@@ -320,28 +347,28 @@ void deletemarks(tree *t, int roll_no, int semno, char *subname, float marks)
     }
 }
 
-void display_bst(tree *t)
+void display_bst(studentnode *root)
 {
 	int i;
 	semnode *pres;
-	studentnode *root = t->root;
     if(root!=NULL)
 	   {
 		display_bst(root->left);
+		printf("\n");
 	    printf("Student name: %s  Roll no: %d\n",root->name, root->roll_no);
 		pres=root->semhead;
 		while(pres!=NULL)
 		{
 			printf("Semester %d:\n",pres->semno);
 			for(i=0;i<SUBJECTS;i++)
-				printf("%s marks: %d, grade: %c", pres->sublist[i]->name, pres->sublist[i]->marks, pres->sublist[i]->grade);
-			printf("SGPA: %f",pres->sgpa);
+				printf("%s marks: %d, grade: %c\n", pres->sublist[i].name, pres->sublist[i].marks, pres->sublist[i].grade);
+			printf("SGPA: %f\n",pres->sgpa);
 			pres=pres->next;
 		}
+		printf("\n");
 	    display_bst(root->right);
 	   }
 }
-
 
 void display_backlog(tree *t)
 {
