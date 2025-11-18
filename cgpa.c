@@ -65,4 +65,57 @@ int getWeightage(char ch){
       }     
 }
 
+void performance_report(studentnode *s)
+{
+	int semno,reval;
+	subnode subject;
+	printf("--Student report of %s, roll no: %d--\n", s->name, s->roll_no);
+	printf("Which semester would you like to access?  ");
+	scanf("%d",&semno);
+	semnode *pres = s->semhead;
+	while(pres!=NULL)
+	{
+		if(pres->semno==semno)
+			break;
+		pres=pres->next;
+	}
+	if(pres!=NULL)
+	{
+		printf("\nSemester %d scorecard\n",semno);
+		for(int i=0;i<SUBJECTS;i++)
+		{
+			subject = pres->sublist[i];
+			printf("%s: marks: %d grade: %c\n",subject.name,subject.marks,subject.grade);
+		}
+		printf("SGPA: %f\n", pres->sgpa);
+		printf("-----------end of report----------\n");
+	}
+	else
+	{
+		printf("Sorry, semester not found.\n");
+	}
+	printf("Current CGPA: %f\n\n",compute_cgpa(s->semhead));
+	printf("Would you like to apply for re-eval (1- yes, 0- no) ?  ");
+	scanf("%d",&reval);
+	if(reval)
+	{
+		char sub[20];
+		int n, newmarks;
+		printf("Which semester number are you changing?  ");
+		scanf("%d",&semno);
+		printf("How many subjects are you changing?  ");
+		scanf("%d",&n);
+		for(int i=0;i<n;i++)
+		{
+			printf("Enter subject name and the new marks: ");
+			scanf("%s %d",sub,&newmarks);
+			updatemarks(s, s->roll_no,semno, sub, newmarks);
+		}
+		performance_report(s);
+	}
+	else
+	{
+		return;
+	}
 
+}
