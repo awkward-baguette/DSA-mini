@@ -63,6 +63,25 @@ char getgrade(int marks);
 int getWeightage(char ch);
 void addmarks(tree *t, char *sname, int roll_no, int semno, char *subname, float marks);
 
+void init(tree *t);
+void pinit(list_t *p);
+char get_grade(int m);
+int getWeightage(char ch);
+float compute_cgpa(semnode *semhead);
+float find_sgpa(subnode subjects[]);
+void pqinsert(list_t*p, studentnode*s);
+node_t pqdelete(list_t *ptr_list, int r_no);
+studentnode *create_snode(int r_no, char sname[]);
+void addsem(studentnode *s, int semno, list_t *p);
+studentnode *add_new_student(tree *t,char sname[], int roll_no);
+studentnode *findstudent(tree *t, int roll_no);
+void create_to_add(tree *t, char sname[], int roll_no, int semno, list_t *p);
+void updatemarks(studentnode *s, int roll_no, int semno, char *subname, int marks);
+void deletemarks(tree *t, int roll_no,list_t *p);
+void display_bst(studentnode *root);
+void qdisplay(list_t *ptr_list,int n);
+void performance_report(studentnode *s);
+
 
 #endif
 
