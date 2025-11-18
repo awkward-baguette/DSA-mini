@@ -26,6 +26,8 @@ float find_sgpa(subnode subjects[]){
         subject->grade=getgrade(subject->marks);
         if(subject->grade!='F')
             sgpa += getWeightage(subject->grade)*(subject->credit);
+        else
+            subject->backlog=1;
         total_credits += subject->credit;
       }
      return sgpa/total_credits;
