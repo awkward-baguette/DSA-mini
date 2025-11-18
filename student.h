@@ -14,6 +14,7 @@ typedef struct subject {
     char name;
     int marks;
     char grade;
+    int backlog;
 } subnode;
 
 typedef struct sem {
